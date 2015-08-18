@@ -95,28 +95,9 @@ public class ThumbToImage {
         } else
             hs.setVisible(viewPager);
 
-        List<View> views = new ArrayList<>();
-
-        for (Thumb thumb : list) {
-            ImageView image = new ImageView(thumbView.getContext());
-
-            image.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            final PhotoViewAttacher atacher = new PhotoViewAttacher(image);
-            image.setImageDrawable(thumbView.getDrawable());
-            mAttacher.update();
-            iMageLoader.displayImage(thumb.getOrigin(), image, new SimpleImageLoadingListener(){
-                @Override
-                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                    super.onLoadingComplete(imageUri, view, loadedImage);
-                    atacher.update();
-                }
-            });
-            views.add(image);
-        }
-        ThumbPagerAdapter adapter = new ThumbPagerAdapter(views);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(selectedPosition);
+        PagerImageController controller = new PagerImageController(mContext, viewPager);
+        controller.setClickImage(thumbView, mAttacher)
+                  .setList(selectedPosition, list);
     }
 
     public int getImagePosition(){
