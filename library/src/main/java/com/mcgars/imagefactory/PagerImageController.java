@@ -1,14 +1,14 @@
 package com.mcgars.imagefactory;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.mcgars.imagefactory.objects.Thumb;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
@@ -19,16 +19,25 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 /**
  * Created by Феофилактов on 18.08.2015.
  */
-public class PagerImageController {
+public class PagerImageController implements View.OnClickListener {
 
+    private final LayoutInflater inflater;
     private Context context;
     private ViewPager viewPager;
     private ImageView clickImage;
     PhotoViewAttacher animatedAtacher;
+    private ThumbPagerAdapter adapter;
+    private OnImageClickListener imageClickListener;
+    private ThumbToImage thumbToImage;
+    private List<Thumb> thumbList;
+    private boolean zoom;
+    private ImageView.ScaleType scale = ImageView.ScaleType.CENTER_CROP;
+    private float offset = 1f;
 
     public PagerImageController(Context context,ViewPager viewPager){
         this.context = context;
         this.viewPager = viewPager;
+        inflater = LayoutInflater.from(context);
     }
 
     public PagerImageController setClickImage(ImageView clickImage, PhotoViewAttacher animatedAtacher){
@@ -37,30 +46,110 @@ public class PagerImageController {
         return this;
     }
 
+    public PagerImageController setPageListener(ViewPager.OnPageChangeListener listener){
+        return setPageListener(listener, false);
+    }
+
+    public PagerImageController setOnImageClickListener(OnImageClickListener imageClickListener){
+        this.imageClickListener = imageClickListener;
+        return this;
+    }
+
+    public PagerImageController setPageListener(ViewPager.OnPageChangeListener listener, boolean isAdd){
+        if(!isAdd)
+            viewPager.clearOnPageChangeListeners();
+        if(listener!=null){
+            viewPager.removeOnPageChangeListener(listener);
+            viewPager.addOnPageChangeListener(listener);
+        }
+        return this;
+    }
+
     public void setList(int selectedPosition, List<Thumb> list){
+        setList(selectedPosition, list, true);
+    }
+
+    public List<Thumb> getThumbList(){
+        return thumbList;
+    }
+
+    public void setList(int selectedPosition, List<Thumb> list, final boolean isThumb){
+        thumbList = list;
         List<View> views = new ArrayList<>();
-
         for (Thumb thumb : list) {
-            ImageView image = new ImageView(context);
 
-            image.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            final PhotoViewAttacher atacher = new PhotoViewAttacher(image);
-            if(animatedAtacher!=null && clickImage!=null){
-                image.setImageDrawable(clickImage.getDrawable());
-                animatedAtacher.update();
+            View v = inflater.inflate(R.layout.view_imagefactory_image, null);
+            ImageView image = (ImageView) v.findViewById(R.id.image);
+            image.setScaleType(scale);
+            final View loader = v.findViewById(R.id.pbLoader);
+
+            if(!isThumb){
+                if(animatedAtacher!=null && clickImage!=null){
+                    image.setImageDrawable(clickImage.getDrawable());
+                    animatedAtacher.update();
+                }
+            } else {
+                image.setTag(thumb);
+                image.setOnClickListener(this);
             }
-            hs.initImageLoader(context).displayImage(thumb.getOrigin(), image, new SimpleImageLoadingListener() {
+            FactoryTool.initImageLoader(context).displayImage(isThumb ? thumb.getThumb() : thumb.getOrigin(), image, new SimpleImageLoadingListener() {
                 @Override
                 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                     super.onLoadingComplete(imageUri, view, loadedImage);
-                    atacher.update();
+                    if (!isThumb) {
+                        new PhotoViewAttacher((ImageView) view);
+//                        atacher.update();
+
+                    }
+                    loader.setVisibility(View.GONE);
                 }
             });
-            views.add(image);
+            views.add(v);
         }
-        ThumbPagerAdapter adapter = new ThumbPagerAdapter(views);
+        adapter = new ThumbPagerAdapter(views);
+        adapter.setRightOffset(offset);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(selectedPosition);
+    }
+
+    public void setRightOffset(float offset){
+        this.offset = offset;
+        if(adapter!=null){
+            adapter.setRightOffset(offset);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Thumb thumb = (Thumb) v.getTag();
+        if(imageClickListener!=null)
+            imageClickListener.onImageClick((ImageView) v, thumb);
+        else {
+            if(zoom && thumbToImage == null && context instanceof Activity){
+                thumbToImage = new ThumbToImage((Activity) context);
+                thumbToImage.zoom((ImageView) v, viewPager.getCurrentItem(), thumbList);
+            }
+        }
+    }
+
+    public int getPosition() {
+        return viewPager.getCurrentItem();
+    }
+
+    public void setZoom(boolean zoom) {
+        this.zoom = zoom;
+    }
+
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
+    public void setImageScale(ImageView.ScaleType scale) {
+        this.scale = scale;
+    }
+
+    public interface OnImageClickListener{
+        public void onImageClick(ImageView v, Thumb thumb);
     }
 }

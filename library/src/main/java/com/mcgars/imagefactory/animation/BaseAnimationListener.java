@@ -1,7 +1,5 @@
 package com.mcgars.imagefactory.animation;
 
-import android.support.v4.animation.AnimatorListenerCompat;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.view.animation.Animation;
 
 /**

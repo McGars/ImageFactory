@@ -15,6 +15,10 @@ import java.util.List;
 public class ThumbPagerAdapter extends PagerAdapter {
 
     private List<View> views;
+    /**
+     * From 0 to 1
+     */
+    private float rightOffset = 1f;
 
     public ThumbPagerAdapter(List<View> views) {
         this.views = views;
@@ -54,5 +58,27 @@ public class ThumbPagerAdapter extends PagerAdapter {
         views.add(view);
         viewPager.setOffscreenPageLimit(views.size());
         viewPager.setAdapter(this);
+    }
+
+    /**
+     *
+     * @param offset From 0 to 1
+     */
+    public void setRightOffset(float offset){
+        if(offset <0 || offset > 1)
+            rightOffset = 1;
+        else
+            rightOffset = offset;
+    }
+
+    @Override
+    public float getPageWidth(int position) {
+        return (rightOffset);
+    }
+
+    public View getView(int currentItem) {
+        if(views == null)
+            return null;
+        return views.get(currentItem);
     }
 }

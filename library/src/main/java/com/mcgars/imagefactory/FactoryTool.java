@@ -1,7 +1,7 @@
 package com.mcgars.imagefactory;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.TypedValue;
@@ -16,7 +16,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 /**
  * Created by Феофилактов on 18.08.2015.
  */
-public class hs {
+public class FactoryTool {
     public static void setVisible(boolean visible, View... views) {
         setVisible(visible?0:4, views);
     }
@@ -96,5 +96,19 @@ public class hs {
             ret = false;
 
         return ret;
+    }
+
+    public static int getAttributeResourceId(Context context, int attr) {
+        try {
+            TypedValue e = new TypedValue();
+            int[] resIdAttr = new int[]{attr};
+            TypedArray a = context.obtainStyledAttributes(e.data, resIdAttr);
+            int resId = a.getResourceId(0, 0);
+            a.recycle();
+            return resId;
+        } catch (Exception var6) {
+            var6.printStackTrace();
+            return 0;
+        }
     }
 }

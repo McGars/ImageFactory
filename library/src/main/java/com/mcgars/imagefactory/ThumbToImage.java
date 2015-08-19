@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.os.ParcelableCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.mcgars.imagefactory.animation.BaseAnimationListener;
 import com.mcgars.imagefactory.objects.Thumb;
@@ -60,7 +60,7 @@ public class ThumbToImage {
     private View wraper;
     PhotoViewAttacher mAttacher;
     private ViewPager viewPager;
-    private ImageView thumbView;
+    private static ImageView thumbView;
     private List<Thumb> list;
     private Class<? extends ImageShowActivity> acticityClass = ImageShowActivity.class;
 
@@ -72,11 +72,26 @@ public class ThumbToImage {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void zoom(final ImageView thumbView, List<Thumb> list){
+        zoom(thumbView, 0, list);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void zoom(final ImageView thumbView, List<Thumb> list, ViewPager.OnPageChangeListener listener){
+        zoom(thumbView, 0, list, listener);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list){
+        zoom(thumbView, selectedPosition, list, null);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list, ViewPager.OnPageChangeListener listener){
         this.thumbView = thumbView;
         this.list = list;
 
-        hs.setVisible(wraper, back);
+        FactoryTool.setVisible(wraper, back);
         fadeIn(back);
 
         // Construct and run the parallel animation of the four translation and
@@ -88,16 +103,17 @@ public class ThumbToImage {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    hs.setVisible(viewPager);
-                    hs.setVisibleGone(expandedImage);
+                    FactoryTool.setVisible(viewPager);
+                    FactoryTool.setVisibleGone(expandedImage);
                 }
             });
         } else
-            hs.setVisible(viewPager);
+            FactoryTool.setVisible(viewPager);
 
         PagerImageController controller = new PagerImageController(mContext, viewPager);
         controller.setClickImage(thumbView, mAttacher)
-                  .setList(selectedPosition, list);
+                  .setPageListener(listener)
+                  .setList(selectedPosition, list, false);
     }
 
     public int getImagePosition(){
@@ -119,7 +135,7 @@ public class ThumbToImage {
             return;
         }
 
-        hs.setVisible(wraper, back);
+        FactoryTool.setVisible(wraper, back);
         fadeIn(back);
 //        YoYo.with(Techniques.FadeIn)
 //                .duration(300)
@@ -155,8 +171,8 @@ public class ThumbToImage {
             rev.setProgress(20);
         }
 
-        if (hs.getConnection(mContext)) {
-            DisplayImageOptions.Builder options = hs.getImageLoaderOptionsBuilder();
+        if (FactoryTool.getConnection(mContext)) {
+            DisplayImageOptions.Builder options = FactoryTool.getImageLoaderOptionsBuilder();
             options.displayer(new SimpleBitmapDisplayer());
             options.resetViewBeforeLoading(false);
 
@@ -173,7 +189,7 @@ public class ThumbToImage {
                             if (Build.VERSION.SDK_INT > 20)
                                 rev.setProgress(100);
                             else if (pbLoaderExpanded.getVisibility() == View.VISIBLE)
-                                hs.setVisibleGone(pbLoaderExpanded);
+                                FactoryTool.setVisibleGone(pbLoaderExpanded);
                             mAttacher.update();
                         }
                     },
@@ -271,7 +287,7 @@ public class ThumbToImage {
                 .play(ObjectAnimator.ofFloat(expandedImage, View.X,
                         startBounds.left, finalBounds.left))
                 .with(ObjectAnimator.ofFloat(expandedImage, View.Y,
-                        startBounds.top - hs.pxToDp(64, mContext), finalBounds.top))
+                        startBounds.top - FactoryTool.pxToDp(64, mContext), finalBounds.top))
                 .with(ObjectAnimator.ofFloat(expandedImage, View.SCALE_X,
                         startScale, 1f)).with(ObjectAnimator.ofFloat(expandedImage,
                 View.SCALE_Y, startScale, 1f));
@@ -292,15 +308,12 @@ public class ThumbToImage {
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                hs.setVisibleGone(pbLoaderExpanded);
+                FactoryTool.setVisibleGone(pbLoaderExpanded);
                 mCurrentAnimator = null;
             }
         });
         set.start();
         mCurrentAnimator = set;
-    }
-
-    void clearViewPager(){
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -318,8 +331,16 @@ public class ThumbToImage {
         boolean isViewPagerOpen = viewPager.getChildCount() > 0;
 
         if(isViewPagerOpen){
-            ImageView img = (ImageView) viewPager.getChildAt(viewPager.getCurrentItem());
-            expandedImage.setImageDrawable(img.getDrawable());
+            View v = ((ThumbPagerAdapter)viewPager.getAdapter()).getView(viewPager.getCurrentItem());
+            if(v!=null){
+                if(v instanceof ImageView)
+                    expandedImage.setImageDrawable(((ImageView) v).getDrawable());
+                else {
+                    ImageView image = (ImageView) v.findViewById(R.id.image);
+                    if(image!=null)
+                        expandedImage.setImageDrawable(image.getDrawable());
+                }
+            }
         }
         fadeOut(back);
 //        YoYo.with(Techniques.FadeOut)
@@ -328,20 +349,19 @@ public class ThumbToImage {
 //                @Override
 //                public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
 //                    super.onAnimationEnd(animation);
-//                    hs.setVisibleGone(back);
+//                    FactoryTool.setVisibleGone(back);
 //                }
 //            })
 //            .playOn(back);
-        hs.setVisibleGone(pbLoaderExpanded);
-        hs.setVisible(expandedImage);
-
+        FactoryTool.setVisibleGone(pbLoaderExpanded);
+        FactoryTool.setVisible(expandedImage);
 
         if (!isViewPagerOpen && Build.VERSION.SDK_INT > 20) {
             rev.closeReleval(new RelevalCircular.OnCircleEndAnimation() {
                 @Override
                 public void animateEnd() {
                     expandedImage.setImageDrawable(null);
-                    hs.setVisible(wraper);
+                    FactoryTool.setVisible(wraper);
                     viewPager.setAdapter(null);
 //                    mAttacher.cleanup();
                 }
@@ -353,6 +373,14 @@ public class ThumbToImage {
             mCurrentAnimator.cancel();
         }
         iMageLoader.stop();
+
+        if(thumbView == null){
+            hideImages();
+            return true;
+        }
+        if(startBounds == null){
+            initBounds();
+        }
         // Animate the four positioning/sizing properties in parallel,
         // back to their original values.
         AnimatorSet set = new AnimatorSet();
@@ -360,7 +388,7 @@ public class ThumbToImage {
             .ofFloat(expandedImage, View.X, startBounds.left))
             .with(ObjectAnimator
                     .ofFloat(expandedImage,
-                            View.Y, startBounds.top - hs.pxToDp(64, mContext)))
+                            View.Y, startBounds.top - FactoryTool.pxToDp(64, mContext)))
             .with(ObjectAnimator
                     .ofFloat(expandedImage,
                             View.SCALE_X, startScale))
@@ -372,14 +400,7 @@ public class ThumbToImage {
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                //thumbView.setAlpha(1f);
-                //back.setVisibility(View.GONE);
-                expandedImage.setImageDrawable(null);
-                viewPager.setAdapter(null);
-                hs.setVisible(false, wraper);
-//                mAttacher.cleanup();
-                //expandedImageView.setVisibility(View.GONE);
-                mCurrentAnimator = null;
+                hideImages();
             }
 
             @Override
@@ -393,13 +414,29 @@ public class ThumbToImage {
         return true;
     }
 
+    private void hideImages(){
+        expandedImage.setImageDrawable(null);
+        viewPager.setAdapter(null);
+        FactoryTool.setVisible(false, wraper);
+//                mAttacher.cleanup();
+        //expandedImageView.setVisibility(View.GONE);
+        mCurrentAnimator = null;
+    }
+
     public void setShowActivity(Class<? extends ImageShowActivity> acticityClass){
         this.acticityClass = acticityClass;
     }
 
     public void showInActivity(String url) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add(url);
+        showInActivity(0, list);
+    }
+
+    public void showInActivity(int selectPosition, ArrayList<String> list) {
         Intent intent = new Intent(mContext, acticityClass);
-        intent.putExtra(ImageShowActivity.IMAGE_URL, url);
+        intent.putStringArrayListExtra(ImageShowFragment.LIST_STRING, list);
+        intent.putExtra(ImageShowFragment.POSITION, selectPosition);
         mContext.startActivity(intent);
     }
 
@@ -408,7 +445,7 @@ public class ThumbToImage {
         if (decorView != null) {
             View firstChaild = decorView.getChildAt(0);
 
-            if (!(firstChaild instanceof RelativeLayout) && !(firstChaild instanceof FrameLayout)) {
+            if ((firstChaild instanceof ScrollView) || !(firstChaild instanceof RelativeLayout) && !(firstChaild instanceof FrameLayout)) {
                 FrameLayout rootViewNew = new FrameLayout(mContext);
                 rootViewNew.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 decorView.removeView(firstChaild);
@@ -422,7 +459,7 @@ public class ThumbToImage {
             back = root.findViewById(R.id.llbackExpandedImage);
             if (back == null) {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
-                wraper = inflater.inflate(R.layout.imagefactory_view_thumb_to_image, root, false);
+                wraper = inflater.inflate(R.layout.view_imagefactory_thumb_to_image, root, false);
                 root.addView(wraper);
                 back = root.findViewById(R.id.llbackExpandedImage);
             } else {
@@ -431,22 +468,22 @@ public class ThumbToImage {
             expandedImage = (ImageView) root.findViewById(R.id.expanded_image);
             mAttacher = new PhotoViewAttacher(expandedImage);
             pbLoaderExpanded = (ProgressBar) root.findViewById(R.id.pbLoaderExpanded);
-            viewPager = (ViewPager) root.findViewById(R.id.viewPager);
+            viewPager = (ViewPager) root.findViewById(R.id.viewPagerActitivity);
         }
     }
 
     private void fadeIn(View v){
-        hs.setVisible(v);
+        FactoryTool.setVisible(v);
         Animation in = AnimationUtils.loadAnimation(mContext, R.anim.imagefactory_fadein);
         v.startAnimation(in);
     }
 
     private void fadeOut(final View v){
-        Animation out = AnimationUtils.loadAnimation(mContext, R.anim.imageFactory_fadeout);
+        Animation out = AnimationUtils.loadAnimation(mContext, R.anim.imagefactory_fadeout);
         out.setAnimationListener(new BaseAnimationListener(){
             @Override
             public void onAnimationEnd(Animation animation) {
-                hs.setVisibleGone(v);
+                FactoryTool.setVisibleGone(v);
             }
         });
         v.startAnimation(out);
