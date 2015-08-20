@@ -10,7 +10,7 @@
         android:id="@+id/llbackExpandedImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#70000000"
+        android:background="@color/imagefactory_background"
         android:visibility="invisible" />
 
     <ImageView
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         />
 
-    <android.support.v4.view.ViewPager
+    <com.mcgars.imagefactory.ViewPagerFixes
         android:id="@+id/viewPagerActitivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,6 +35,7 @@
         android:visibility="gone"
         android:progressDrawable="@drawable/imagefactory_progress"
         style="@style/imagefactory_progresbarspiner"
+
         android:max="100" />
 
 </FrameLayout>

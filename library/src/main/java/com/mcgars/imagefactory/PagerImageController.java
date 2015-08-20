@@ -33,6 +33,8 @@ public class PagerImageController implements View.OnClickListener {
     private boolean zoom;
     private ImageView.ScaleType scale = ImageView.ScaleType.CENTER_CROP;
     private float offset = 1f;
+    private ViewPager.OnPageChangeListener zoomPageListener;
+    private int backColor;
 
     public PagerImageController(Context context,ViewPager viewPager){
         this.context = context;
@@ -62,6 +64,11 @@ public class PagerImageController implements View.OnClickListener {
             viewPager.removeOnPageChangeListener(listener);
             viewPager.addOnPageChangeListener(listener);
         }
+        return this;
+    }
+
+    public PagerImageController setZoomPageListener(ViewPager.OnPageChangeListener zoomPageListener){
+        this.zoomPageListener = zoomPageListener;
         return this;
     }
 
@@ -126,9 +133,14 @@ public class PagerImageController implements View.OnClickListener {
         if(imageClickListener!=null)
             imageClickListener.onImageClick((ImageView) v, thumb);
         else {
-            if(zoom && thumbToImage == null && context instanceof Activity){
-                thumbToImage = new ThumbToImage((Activity) context);
-                thumbToImage.zoom((ImageView) v, viewPager.getCurrentItem(), thumbList);
+            if(zoom){
+                if(thumbToImage == null && context instanceof Activity){
+                    thumbToImage = new ThumbToImage((Activity) context);
+                }
+                if(thumbToImage!=null){
+                    thumbToImage.setBackgroundColor(backColor);
+                    thumbToImage.zoom((ImageView) v, viewPager.getCurrentItem(), thumbList, zoomPageListener);
+                }
             }
         }
     }
@@ -147,6 +159,16 @@ public class PagerImageController implements View.OnClickListener {
 
     public void setImageScale(ImageView.ScaleType scale) {
         this.scale = scale;
+    }
+
+    public boolean closeImage() {
+        if(thumbToImage!=null)
+            return thumbToImage.closeImage();
+        return false;
+    }
+
+    public void setBackgroundColor(int color) {
+        backColor = color;
     }
 
     public interface OnImageClickListener{

@@ -4,6 +4,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -33,6 +34,13 @@ public class ThumbPagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View view = views.get(position);
         container.addView(view);
+        if(rightOffset < 1){
+            if(container instanceof ViewPager){
+                ((ViewPager) container).setPageMargin(
+                        (int) container.getContext().getResources()
+                                .getDimension(R.dimen.padding8));
+            }
+        }
         return view;
     }
 

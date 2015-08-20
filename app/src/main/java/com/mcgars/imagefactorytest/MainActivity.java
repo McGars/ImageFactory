@@ -6,10 +6,9 @@ import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.mcgars.imagefactory.FactoryTool;
 import com.mcgars.imagefactory.PagerImageController;
 import com.mcgars.imagefactory.ThumbToImage;
-import com.mcgars.imagefactory.cutomviews.ImageFactoryPager;
+import com.mcgars.imagefactory.cutomviews.ImageFactoryView;
 import com.mcgars.imagefactory.objects.Thumb;
 
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements PagerImageController.OnImageClickListener {
 
     private ThumbToImage thumbToImage;
+    private ImageFactoryView imgFactoryClicked;
+    private ImageFactoryView imgFactoryWithZoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,30 +28,29 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
         thumbToImage = new ThumbToImage(MainActivity.this);
 
         // default
-        ImageFactoryPager pager = (ImageFactoryPager) findViewById(R.id.imgFactory);
+        ImageFactoryView pager = (ImageFactoryView) findViewById(R.id.imgFactory);
         pager.setList(getList());
 
         // default zoom
-        ImageFactoryPager imgFactoryWithZoom = (ImageFactoryPager) findViewById(R.id.imgFactoryWithZoom);
+        imgFactoryWithZoom = (ImageFactoryView) findViewById(R.id.imgFactoryWithZoom);
         imgFactoryWithZoom
                 .setImageScale(ImageView.ScaleType.CENTER_INSIDE)
                 .setZoom(true)
                 .setList(getList());
 
         // custom click, offset
-        ImageFactoryPager imgFactoryClicked = (ImageFactoryPager) findViewById(R.id.imgFactoryClicked);
+        imgFactoryClicked = (ImageFactoryView) findViewById(R.id.imgFactoryClicked);
         imgFactoryClicked.setRightOffset(.9f);
         imgFactoryClicked.setList(getList(), this);
 
         // custom zoom
-        final ImageFactoryPager imgFactoryClickedZoom = (ImageFactoryPager) findViewById(R.id.imgFactoryClickedZoom);
+        final ImageFactoryView imgFactoryClickedZoom = (ImageFactoryView) findViewById(R.id.imgFactoryClickedZoom);
         imgFactoryClickedZoom.setList(getList(), new PagerImageController.OnImageClickListener() {
             @Override
             public void onImageClick(ImageView v, Thumb thumb) {
 
                 showToast("Custom zoom");
-                new ThumbToImage(MainActivity.this)
-                        .zoom(v, imgFactoryClickedZoom.getPosition(), imgFactoryClickedZoom.getThumbList());
+                thumbToImage.zoom(v, imgFactoryClickedZoom);
             }
         });
     }
@@ -83,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
 
     @Override
     public void onBackPressed() {
+
+        if(imgFactoryWithZoom.closeImage())
+            return;
         if(thumbToImage.closeImage())
             return;
 

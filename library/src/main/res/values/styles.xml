@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="imagefactory_progresbarspiner">
+    <style name="imagefactory_progresbarspiner" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 

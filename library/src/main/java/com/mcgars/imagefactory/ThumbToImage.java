@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.mcgars.imagefactory.animation.BaseAnimationListener;
+import com.mcgars.imagefactory.cutomviews.ImageFactoryView;
 import com.mcgars.imagefactory.objects.Thumb;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -60,7 +61,7 @@ public class ThumbToImage {
     private View wraper;
     PhotoViewAttacher mAttacher;
     private ViewPager viewPager;
-    private static ImageView thumbView;
+    private ImageView thumbView;
     private List<Thumb> list;
     private Class<? extends ImageShowActivity> acticityClass = ImageShowActivity.class;
 
@@ -86,6 +87,10 @@ public class ThumbToImage {
         zoom(thumbView, selectedPosition, list, null);
     }
 
+    public void zoom(ImageView v, ImageFactoryView imgFactory) {
+        zoom(v, imgFactory.getPosition(), imgFactory.getThumbList(), imgFactory);
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list, ViewPager.OnPageChangeListener listener){
         this.thumbView = thumbView;
@@ -93,6 +98,7 @@ public class ThumbToImage {
 
         FactoryTool.setVisible(wraper, back);
         fadeIn(back);
+        fadeIn(expandedImage);
 
         // Construct and run the parallel animation of the four translation and
         // scale properties (X, Y, SCALE_X, and SCALE_Y).
@@ -105,6 +111,7 @@ public class ThumbToImage {
                     super.onAnimationEnd(animation);
                     FactoryTool.setVisible(viewPager);
                     FactoryTool.setVisibleGone(expandedImage);
+                    FactoryTool.setVisibleGone(pbLoaderExpanded);
                 }
             });
         } else
@@ -137,6 +144,7 @@ public class ThumbToImage {
 
         FactoryTool.setVisible(wraper, back);
         fadeIn(back);
+        fadeIn(expandedImage);
 //        YoYo.with(Techniques.FadeIn)
 //                .duration(300)
 //                .playOn(back);
@@ -237,11 +245,17 @@ public class ThumbToImage {
         // view. Also set the container view's offset as the origin for the
         // bounds, since that's the origin for the positioning animation
         // properties (X, Y).
-        thumbView.getGlobalVisibleRect(startBounds);
-        thumbView.getRootView()
-                .getGlobalVisibleRect(finalBounds, globalOffset);
-        startBounds.offset(-globalOffset.x, -(globalOffset.y));
-        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+        if(thumbView!=null){
+            thumbView.getGlobalVisibleRect(startBounds);
+            thumbView.getRootView()
+                    .getGlobalVisibleRect(finalBounds, globalOffset);
+            startBounds.offset(-globalOffset.x, -(globalOffset.y));
+            finalBounds.offset(-globalOffset.x, -globalOffset.y);
+        } else {
+            root.getGlobalVisibleRect(finalBounds, globalOffset);
+            startBounds.offset(globalOffset.x/4, globalOffset.y/4);
+            finalBounds.offset(globalOffset.x / 2, globalOffset.y / 2);
+        }
 
 
         // Adjust the start bounds to be the same aspect ratio as the final
@@ -343,6 +357,7 @@ public class ThumbToImage {
             }
         }
         fadeOut(back);
+        fadeOut(expandedImage);
 //        YoYo.with(Techniques.FadeOut)
 //            .duration(200)
 //            .withListener(new BaseAnimationListener() {
@@ -487,5 +502,10 @@ public class ThumbToImage {
             }
         });
         v.startAnimation(out);
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        if(backgroundColor!=0)
+            back.setBackgroundColor(backgroundColor);
     }
 }

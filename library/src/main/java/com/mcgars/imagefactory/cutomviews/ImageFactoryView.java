@@ -6,7 +6,6 @@ import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,28 +19,28 @@ import java.util.List;
 /**
  * Created by Владимир on 19.08.2015.
  */
-public class ImageFactoryPager extends LinearLayout{
+public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageChangeListener {
 
     private CircleTabsView tabs;
     private PagerImageController pagerController;
 
-    public ImageFactoryPager(Context context) {
+    public ImageFactoryView(Context context) {
         this(context, null);
     }
 
-    public ImageFactoryPager(Context context, AttributeSet attrs) {
+    public ImageFactoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public ImageFactoryPager(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ImageFactoryView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ImageFactoryPager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ImageFactoryView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
@@ -59,6 +58,7 @@ public class ImageFactoryPager extends LinearLayout{
         // Circle paging
         tabs = new CircleTabsView(getContext());
         addView(tabs);
+        pagerController.setZoomPageListener(this);
     }
 
     public void setVisibilityPagging(boolean visible){
@@ -95,12 +95,36 @@ public class ImageFactoryPager extends LinearLayout{
         return pagerController.getThumbList();
     }
 
-    public ImageFactoryPager setZoom(boolean b) {
+    public ImageFactoryView setZoom(boolean b) {
         pagerController.setZoom(b);
         return this;
     }
-    public ImageFactoryPager setImageScale(ImageView.ScaleType scale) {
+    public ImageFactoryView setImageScale(ImageView.ScaleType scale) {
         pagerController.setImageScale(scale);
         return this;
+    }
+
+    public boolean closeImage() {
+        return pagerController.closeImage();
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        pagerController.getViewPager().setCurrentItem(position);
+//        tabs.onPageSelected(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    public void setBackgroundColor(int color){
+        pagerController.setBackgroundColor(color);
     }
 }
