@@ -358,16 +358,7 @@ public class ThumbToImage {
         }
         fadeOut(back);
         fadeOut(expandedImage);
-//        YoYo.with(Techniques.FadeOut)
-//            .duration(200)
-//            .withListener(new BaseAnimationListener() {
-//                @Override
-//                public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
-//                    super.onAnimationEnd(animation);
-//                    FactoryTool.setVisibleGone(back);
-//                }
-//            })
-//            .playOn(back);
+
         FactoryTool.setVisibleGone(pbLoaderExpanded);
         FactoryTool.setVisible(expandedImage);
 
@@ -375,10 +366,7 @@ public class ThumbToImage {
             rev.closeReleval(new RelevalCircular.OnCircleEndAnimation() {
                 @Override
                 public void animateEnd() {
-                    expandedImage.setImageDrawable(null);
-                    FactoryTool.setVisible(wraper);
-                    viewPager.setAdapter(null);
-//                    mAttacher.cleanup();
+                    hideImages();
                 }
             });
             return true;
@@ -421,6 +409,7 @@ public class ThumbToImage {
             @Override
             public void onAnimationCancel(Animator animation) {
                 onAnimationEnd(animation);
+                hideImages();
             }
         });
         set.start();
@@ -432,9 +421,7 @@ public class ThumbToImage {
     private void hideImages(){
         expandedImage.setImageDrawable(null);
         viewPager.setAdapter(null);
-        FactoryTool.setVisible(false, wraper);
-//                mAttacher.cleanup();
-        //expandedImageView.setVisibility(View.GONE);
+        FactoryTool.setVisibleGone(wraper);
         mCurrentAnimator = null;
     }
 

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -126,5 +127,9 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
 
     public void setBackgroundColor(int color){
         pagerController.setBackgroundColor(color);
+    }
+
+    public void setEndView(View v){
+        pagerController.setEndView(v);
     }
 }
