@@ -354,13 +354,14 @@ public class ThumbToImage {
                     if(image!=null)
                         expandedImage.setImageDrawable(image.getDrawable());
                 }
+                mAttacher.update();
             }
         }
+        FactoryTool.setVisibleGone(pbLoaderExpanded);
+        FactoryTool.setVisible(expandedImage);
         fadeOut(back);
         fadeOut(expandedImage);
 
-        FactoryTool.setVisibleGone(pbLoaderExpanded);
-        FactoryTool.setVisible(expandedImage);
 
         if (!isViewPagerOpen && Build.VERSION.SDK_INT > 20) {
             rev.closeReleval(new RelevalCircular.OnCircleEndAnimation() {
