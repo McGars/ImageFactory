@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
     @Override
     public void onImageClick(ImageView v, Thumb thumb) {
         showToast(thumb.getThumb());
+        thumbToImage.zoom(v, thumb.getOrigin());
     }
 
     private void showToast(String msg){

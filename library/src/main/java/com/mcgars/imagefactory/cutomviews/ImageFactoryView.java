@@ -16,6 +16,7 @@ import com.mcgars.imagefactory.R;
 import com.mcgars.imagefactory.objects.Thumb;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Владимир on 19.08.2015.
@@ -50,6 +51,7 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         setOrientation(VERTICAL);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ViewPager viewPager = (ViewPager) inflater.inflate(R.layout.view_imagefactory_pager, this, false);
+        viewPager.setId(new Random().nextInt(1000) + 65);
         LinearLayout.LayoutParams params = (LayoutParams) viewPager.getLayoutParams();
         params.weight = 1;
         viewPager.setLayoutParams(params);
