@@ -9,10 +9,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +108,7 @@ public class ThumbToImage {
     public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list, ViewPager.OnPageChangeListener listener) {
         this.thumbView = thumbView;
         this.list = list;
-        FactoryTool.setVisible(wraper, back, viewPager);
+        FactoryTool.setVisible(wraper, viewPager);
         fadeIn(back);
         fadeIn(viewPager);
 
@@ -122,8 +124,7 @@ public class ThumbToImage {
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
 //                    FactoryTool.setVisible(viewPager);
-                    FactoryTool.setVisibleGone(expandedImage);
-                    FactoryTool.setVisibleGone(pbLoaderExpanded);
+                    FactoryTool.setVisibleGone(expandedImage,pbLoaderExpanded);
                 }
             });
         } else
@@ -143,43 +144,32 @@ public class ThumbToImage {
             return;
         this.thumbView = thumbView;
 
-        isLoad = false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             showInActivity(url);
             return;
         }
-        mAttacher = new PhotoViewAttacher(expandedImage);
-        FactoryTool.setVisible(wraper, expandedImage);
-        fadeIn(back);
+        isLoad = false;
         // If there's an animation in progress, cancel it
         // immediately and proceed with this one.
         if (mCurrentAnimator != null) {
             mCurrentAnimator.cancel();
         }
 
-        // Upon clicking the zoomed-in image, it should zoom back down
-        // to the original bounds and show the thumbnail instead of
-        // the expanded image.
-//        expandedImage.setOnClickListener(new View.OnClickListener() {
-//            @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-//            @Override
-//            public void onClick(View view) {
-//                closeImage();
-//            }
-//        });
+        FactoryTool.setVisible(wraper, expandedImage);
+        fadeIn(back);
 
         if (pbLoaderExpanded != null)
             pbLoaderExpanded.setProgress(0);
 
         expandedImage.setImageDrawable(thumbView.getDrawable());
-        mAttacher.update();
+        mAttacher = new PhotoViewAttacher(expandedImage);
         if (Build.VERSION.SDK_INT > 20) {
             rev.setType(RelevalCircular.TYPE.VIEW);
             rev.startProgress(expandedImage, null);
             rev.setProgress(20);
         }
 
-        if (!FactoryTool.getConnection(mContext)) {
+        if (FactoryTool.getConnection(mContext)) {
             DisplayImageOptions.Builder options = FactoryTool.getImageLoaderOptionsBuilder();
             options.displayer(new SimpleBitmapDisplayer());
             options.resetViewBeforeLoading(false);
@@ -197,7 +187,7 @@ public class ThumbToImage {
                             isLoad = true;
                             if (Build.VERSION.SDK_INT > 20)
                                 rev.setProgress(100);
-                            else if (pbLoaderExpanded.getVisibility() == View.VISIBLE)
+                            else
                                 FactoryTool.setVisibleGone(pbLoaderExpanded);
                             mAttacher.update();
                         }
@@ -303,11 +293,10 @@ public class ThumbToImage {
         View toAnimate = null;
         if(isViewPagerOpen){
             toAnimate = viewPager;
-            FactoryTool.setVisible(viewPager);
         } else {
             toAnimate = expandedImage;
-            FactoryTool.setVisible(expandedImage);
         }
+        FactoryTool.setVisible(toAnimate);
         AnimatorSet set = new AnimatorSet();
         set
                 .play(ObjectAnimator.ofFloat(toAnimate, View.X,
@@ -362,28 +351,9 @@ public class ThumbToImage {
         boolean isViewPagerOpen = viewPager.getAdapter() !=null;
         View toAnimate = isViewPagerOpen ? viewPager : expandedImage;
 
-
-        if (isViewPagerOpen) {
-
-//            View v = ((ThumbPagerAdapter) viewPager.getAdapter()).getView(viewPager.getCurrentItem());
-//            if (v != null) {
-//                if (v instanceof ImageView)
-//                    expandedImage.setImageDrawable(((ImageView) v).getDrawable());
-//                else {
-//                    ImageView image = (ImageView) v.findViewById(R.id.image);
-//                    if (image != null)
-//                        expandedImage.setImageDrawable(image.getDrawable());
-//                }
-//                mAttacher.update();
-//            }
-//            }
-            fadeOut(viewPager);
-        } else {
-            FactoryTool.setVisible(expandedImage);
-        }
         iMageLoader.stop();
-        FactoryTool.setVisibleGone(pbLoaderExpanded);
         fadeOut(back);
+        FactoryTool.setVisibleGone(pbLoaderExpanded);
 
 
         if (!isViewPagerOpen && Build.VERSION.SDK_INT > 20) {
@@ -395,11 +365,11 @@ public class ThumbToImage {
             });
             return true;
         }
-
         if (mCurrentAnimator != null) {
             mCurrentAnimator.cancel();
         }
 
+        fadeOut(toAnimate);
         if (thumbView == null) {
             hideImages();
             return true;
@@ -409,7 +379,6 @@ public class ThumbToImage {
         }
         // Animate the four positioning/sizing properties in parallel,
         // back to their original values.
-        fadeOut(expandedImage);
         AnimatorSet set = new AnimatorSet();
         set.play(ObjectAnimator
                 .ofFloat(toAnimate, View.X, startBounds.left))
@@ -442,9 +411,10 @@ public class ThumbToImage {
     }
 
     private void hideImages() {
+        expandedImage.clearAnimation();
         expandedImage.setImageDrawable(null);
         viewPager.setAdapter(null);
-        FactoryTool.setVisibleGone(wraper);
+        FactoryTool.setVisibleGone(wraper,expandedImage, viewPager);
         mCurrentAnimator = null;
     }
 
