@@ -1,8 +1,10 @@
 package com.mcgars.imagefactorytest;
 
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -10,9 +12,13 @@ import com.mcgars.imagefactory.PagerImageController;
 import com.mcgars.imagefactory.ThumbToImage;
 import com.mcgars.imagefactory.cutomviews.ImageFactoryView;
 import com.mcgars.imagefactory.objects.Thumb;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class MainActivity extends AppCompatActivity implements PagerImageController.OnImageClickListener {
 
@@ -53,6 +59,16 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
                 thumbToImage.zoom(v, imgFactoryClickedZoom);
             }
         });
+
+        ImageView bigImage = (ImageView) findViewById(R.id.bigImage);
+        final PhotoViewAttacher mAtatcher = new PhotoViewAttacher(bigImage);
+        ImageLoader.getInstance().displayImage("http://goodimg.ru/img/kartinki-jpg2.jpg", bigImage, new SimpleImageLoadingListener(){
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                mAtatcher.update();
+            }
+        });
+
     }
 
     List<Thumb> getList(){

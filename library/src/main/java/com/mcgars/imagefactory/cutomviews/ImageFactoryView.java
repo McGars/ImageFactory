@@ -51,6 +51,7 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         setOrientation(VERTICAL);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ViewPager viewPager = (ViewPager) inflater.inflate(R.layout.view_imagefactory_pager, this, false);
+        // if exist many viewPagers
         viewPager.setId(new Random().nextInt(1000) + 65);
         LinearLayout.LayoutParams params = (LayoutParams) viewPager.getLayoutParams();
         params.weight = 1;
@@ -64,6 +65,10 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         pagerController.setZoomPageListener(this);
     }
 
+    /**
+     * Hide circle pagging view
+     * @param visible
+     */
     public void setVisibilityPagging(boolean visible){
         FactoryTool.setVisibleGone(!visible, tabs);
     }
@@ -72,6 +77,11 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         pagerController.setPageListener(listener, true);
     }
 
+    /**
+     * Offset page from right
+     * from 0f to 1f;
+     * @param offset
+     */
     public void setRightOffset(float offset){
         pagerController.setRightOffset(offset);
     }
@@ -98,6 +108,12 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         return pagerController.getThumbList();
     }
 
+    /**
+     * Enable default click on image and zoom her
+     * to front
+     * @param b
+     * @return
+     */
     public ImageFactoryView setZoom(boolean b) {
         pagerController.setZoom(b);
         return this;
@@ -107,6 +123,10 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
         return this;
     }
 
+    /**
+     * ZoomOut
+     * @return
+     */
     public boolean closeImage() {
         return pagerController.closeImage();
     }
