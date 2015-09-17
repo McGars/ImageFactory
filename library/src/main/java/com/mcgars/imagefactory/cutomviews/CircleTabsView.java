@@ -17,12 +17,14 @@ import com.mcgars.imagefactory.R;
 
 /**
  * Created by Владимир on 06.07.2015.
+ * Индикаторы пагинации кружочками
  */
 public class CircleTabsView extends LinearLayout implements ViewPager.OnPageChangeListener {
     private int size;
     private int selectedColor;
     private int selected;
     private int radius;
+    private int defaultColor = Color.GRAY;
 
     public CircleTabsView(Context context) {
         this(context, null);
@@ -45,6 +47,23 @@ public class CircleTabsView extends LinearLayout implements ViewPager.OnPageChan
         setGravity(Gravity.CENTER_HORIZONTAL);
         selectedColor = getContext().getResources().getColor(FactoryTool.getAttributeResourceId(getContext(), R.attr.colorAccent));
         radius = FactoryTool.pxToDp(8, getContext());
+    }
+
+    /**
+     * Подсветка кружочка выделеной страницы
+     * По умолчанию R.attr.colorAccent темы
+     * @param selectedColor
+     */
+    public void setSelectedColor(int selectedColor){
+        this.selectedColor = selectedColor;
+    }
+
+    /**
+     * Цвет кружочка по умолчанию (Color.GRAY)
+     * @param defaultColor
+     */
+    public void setDefaultColor(int defaultColor){
+        this.defaultColor = defaultColor;
     }
 
     public void setViewPager(ViewPager viewPager) {
@@ -81,7 +100,7 @@ public class CircleTabsView extends LinearLayout implements ViewPager.OnPageChan
         if (isSelected)
             drawable.setColorFilter(selectedColor, PorterDuff.Mode.SRC_ATOP);
         else
-            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(defaultColor, PorterDuff.Mode.SRC_ATOP);
     }
 
 
