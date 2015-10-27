@@ -16,8 +16,6 @@ import com.mcgars.imagefactory.FactoryTool;
 import com.mcgars.imagefactory.R;
 
 /**
- * Created by Владимир on 06.07.2015.
- * Индикаторы пагинации кружочками
  */
 public class CircleTabsView extends LinearLayout implements ViewPager.OnPageChangeListener {
     private int size;
