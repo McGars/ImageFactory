@@ -30,3 +30,4 @@ app/build
 !build.gradle
 .*
 !.gitignore
+keybitray.proporties
