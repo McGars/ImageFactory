@@ -4,7 +4,9 @@
     <application android:allowBackup="true">
         <activity
             android:name=".ImageShowActivity"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            />
     </application>
 
 </manifest>
