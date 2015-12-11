@@ -20,11 +20,17 @@ public class ImageShowFragment extends Fragment {
     private ViewPager viewPager;
     public static final String POSITION = "position";
     public static final String LIST_STRING = "list_string";
+    public static final String IS_THUMB = "is_thumb";
     int position;
     private List<Thumb> listValues = new ArrayList<>();
 
     public static Fragment newInstance(Bundle extras) {
+        return newInstance(extras, true);
+    }
+
+    public static ImageShowFragment newInstance(Bundle extras, boolean isThumb) {
         ImageShowFragment frag = new ImageShowFragment();
+        extras.putBoolean(IS_THUMB, isThumb);
         frag.setArguments(extras);
         return frag;
     }
@@ -63,7 +69,7 @@ public class ImageShowFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PagerImageController controller = new PagerImageController(getActivity(), viewPager);
-        controller.setList(position, listValues);
+        controller.setList(position, listValues, getArguments().getBoolean(IS_THUMB, true));
     }
 
 }

@@ -28,7 +28,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
 }
 
 // это блок будет обработан плагином bintray-release

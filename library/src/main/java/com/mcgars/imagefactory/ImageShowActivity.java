@@ -9,6 +9,9 @@ public class ImageShowActivity extends android.support.v7.app.AppCompatActivity 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imagefactory_image);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, ImageShowFragment.newInstance(getIntent().getExtras()));
+                .replace(R.id.content_frame,
+                        ImageShowFragment.newInstance(getIntent().getExtras(), false))
+                .commit()
+        ;
     }
 }
