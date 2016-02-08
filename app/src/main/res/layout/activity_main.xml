@@ -22,23 +22,23 @@
         <com.mcgars.imagefactory.cutomviews.ImageFactoryView
             android:id="@+id/imgFactory"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="250dp" />
 
         <com.mcgars.imagefactory.cutomviews.ImageFactoryView
             android:id="@+id/imgFactoryWithZoom"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="250dp" />
 
         <com.mcgars.imagefactory.cutomviews.ImageFactoryView
             android:id="@+id/imgFactoryClicked"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="250dp"
             android:layout_marginTop="16dp" />
 
         <com.mcgars.imagefactory.cutomviews.ImageFactoryView
             android:id="@+id/imgFactoryClickedZoom"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="250dp"
             android:layout_marginTop="16dp" />
 
 

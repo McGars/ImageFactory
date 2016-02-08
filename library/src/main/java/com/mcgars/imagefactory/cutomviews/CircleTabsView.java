@@ -22,7 +22,7 @@ public class CircleTabsView extends LinearLayout implements ViewPager.OnPageChan
     private int selectedColor;
     private int selected;
     private int radius;
-    private int defaultColor = Color.GRAY;
+    private int defaultColor = Color.WHITE;
 
     public CircleTabsView(Context context) {
         this(context, null);

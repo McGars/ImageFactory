@@ -2,4 +2,5 @@
 <resources>
     <color name="imagefactory_loader_background">#333333</color>
     <color name="imagefactory_background">#CC000000</color>
+    <color name="black_owerlay_40">#66000000</color>
 </resources>

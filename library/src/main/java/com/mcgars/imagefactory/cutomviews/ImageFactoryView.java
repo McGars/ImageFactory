@@ -5,8 +5,11 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -21,10 +24,10 @@ import java.util.Random;
 /**
  * Created by Владимир on 19.08.2015.
  */
-public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageChangeListener {
+public class ImageFactoryView extends FrameLayout implements ViewPager.OnPageChangeListener {
 
-    private CircleTabsView tabs;
-    private PagerImageController pagerController;
+    protected CircleTabsView tabs;
+    protected PagerImageController pagerController;
 
     public ImageFactoryView(Context context) {
         this(context, null);
@@ -48,21 +51,36 @@ public class ImageFactoryView extends LinearLayout implements ViewPager.OnPageCh
     }
 
     private void init() {
-        setOrientation(VERTICAL);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ViewPager viewPager = (ViewPager) inflater.inflate(R.layout.view_imagefactory_pager, this, false);
         // if exist many viewPagers
         viewPager.setId(new Random().nextInt(1000) + 65);
-        LinearLayout.LayoutParams params = (LayoutParams) viewPager.getLayoutParams();
-        params.weight = 1;
+        FrameLayout.LayoutParams params = (LayoutParams) viewPager.getLayoutParams();
         viewPager.setLayoutParams(params);
         addView(viewPager);
-
         pagerController = new PagerImageController(getContext(), viewPager);
+
+        View shadow = new View(getContext());
+        shadow.setBackgroundResource(R.drawable.imagefactory_shadow);
+        params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, FactoryTool.pxToDp(80, getContext()),  Gravity.BOTTOM);
+        shadow.setLayoutParams(params);
+        addView(shadow);
+
         // Circle paging
         tabs = new CircleTabsView(getContext());
+        params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,  Gravity.BOTTOM);
+        tabs.setLayoutParams(params);
         addView(tabs);
+
         pagerController.setZoomPageListener(this);
+    }
+
+    public PagerImageController getPagerController() {
+        return pagerController;
+    }
+
+    public CircleTabsView getTabs() {
+        return tabs;
     }
 
     /**
