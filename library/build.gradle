@@ -44,7 +44,7 @@ if(file(filePatch).exists()){
         groupId = 'com.github.msgars'
         artifactId = 'ImageFactory'
     //    repoName = 'ImageFactory'
-        publishVersion = '1.0.5'
+        publishVersion = '1.0.6'
     //    website = 'https://github.com/McGars/ImageFactory'
     //    description = 'View show image from thumb to screensize for android'
     //    repository = "${website}.git"
