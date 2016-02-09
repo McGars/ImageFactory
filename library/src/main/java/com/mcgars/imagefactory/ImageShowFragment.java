@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ImageShowFragment extends Fragment {
     public static final String LIST_STRING = "list_string";
     public static final String IS_THUMB = "is_thumb";
     int position;
-    private List<Thumb> listValues = new ArrayList<>();
+    private List<IThumb> listValues = new ArrayList<>();
 
     public static Fragment newInstance(Bundle extras) {
         return newInstance(extras, true);

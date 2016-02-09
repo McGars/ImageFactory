@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.mcgars.imagefactory.PagerImageController;
 import com.mcgars.imagefactory.ThumbToImage;
 import com.mcgars.imagefactory.cutomviews.ImageFactoryView;
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
         final ImageFactoryView imgFactoryClickedZoom = (ImageFactoryView) findViewById(R.id.imgFactoryClickedZoom);
         imgFactoryClickedZoom.setList(getList(), new PagerImageController.OnImageClickListener() {
             @Override
-            public void onImageClick(ImageView v, Thumb thumb) {
+            public void onImageClick(ImageView v, IThumb thumb) {
 
                 showToast("Custom zoom");
                 thumbToImage.zoom(v, imgFactoryClickedZoom);
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements PagerImageControl
     }
 
     @Override
-    public void onImageClick(ImageView v, Thumb thumb) {
+    public void onImageClick(ImageView v, IThumb thumb) {
         showToast(thumb.getThumb());
         thumbToImage.zoom(v, thumb.getOrigin());
     }

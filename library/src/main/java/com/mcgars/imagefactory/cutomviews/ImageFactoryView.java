@@ -1,6 +1,7 @@
 package com.mcgars.imagefactory.cutomviews;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import com.mcgars.imagefactory.FactoryTool;
 import com.mcgars.imagefactory.PagerImageController;
 import com.mcgars.imagefactory.R;
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 
 import java.util.List;
@@ -48,6 +50,14 @@ public class ImageFactoryView extends FrameLayout implements ViewPager.OnPageCha
     public ImageFactoryView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
+    }
+
+    /**
+     * If context not instance of Activity
+     * @param activity
+     */
+    public void setActivity(Activity activity){
+        pagerController.setActivity(activity);
     }
 
     private void init() {
@@ -104,15 +114,15 @@ public class ImageFactoryView extends FrameLayout implements ViewPager.OnPageCha
         pagerController.setRightOffset(offset);
     }
 
-    public void setList(List<Thumb> list){
+    public void setList(List<? extends IThumb> list){
         setList(0, list, null);
     }
 
-    public void setList(List<Thumb> list, PagerImageController.OnImageClickListener listener){
+    public void setList(List<? extends IThumb> list, PagerImageController.OnImageClickListener listener){
         setList(0, list, listener);
     }
 
-    public void setList(int position, List<Thumb> list, PagerImageController.OnImageClickListener listener){
+    public void setList(int position, List<? extends IThumb> list, PagerImageController.OnImageClickListener listener){
         pagerController.setOnImageClickListener(listener);
         pagerController.setList(position, list);
         tabs.setViewPager(pagerController.getViewPager());
@@ -122,7 +132,7 @@ public class ImageFactoryView extends FrameLayout implements ViewPager.OnPageCha
         return pagerController.getPosition();
     }
 
-    public List<Thumb> getThumbList(){
+    public List<? extends IThumb> getThumbList(){
         return pagerController.getThumbList();
     }
 

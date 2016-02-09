@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -34,7 +35,7 @@ public class PagerImageController implements View.OnClickListener {
     private ThumbPagerAdapter adapterThumb;
     private OnImageClickListener imageClickListener;
     private ThumbToImage thumbToImage;
-    private List<Thumb> thumbList;
+    private List<? extends IThumb> thumbList;
     private boolean zoom;
     private ImageView.ScaleType scale = ImageView.ScaleType.CENTER_CROP;
     private float offset = 1f;
@@ -42,6 +43,7 @@ public class PagerImageController implements View.OnClickListener {
     private int backColor;
     private View endView;
     private ImageView currentImageSelected;
+    private Activity activity;
 
     public PagerImageController(Context context, ViewPager viewPager) {
         this.context = context;
@@ -78,20 +80,20 @@ public class PagerImageController implements View.OnClickListener {
         return this;
     }
 
-    public void setList(int selectedPosition, List<Thumb> list) {
+    public void setList(int selectedPosition, List<? extends IThumb> list) {
         setList(selectedPosition, list, true);
     }
 
-    public List<Thumb> getThumbList() {
+    public List<? extends IThumb> getThumbList() {
         return thumbList;
     }
 
-    public void setList(int selectedPosition, List<Thumb> list, final boolean isThumb) {
+    public void setList(int selectedPosition, List<? extends IThumb> list, final boolean isThumb) {
         thumbList = list;
 
         if(!isThumb){
             for (int i = 0; i < list.size(); i++) {
-                Thumb thumb = list.get(i);
+                IThumb thumb = list.get(i);
                 if (thumb.getPosition() < 0)
                     thumb.setPosition(i);
             }
@@ -103,7 +105,7 @@ public class PagerImageController implements View.OnClickListener {
 
             List<View> views = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
-                Thumb thumb = list.get(i);
+                IThumb thumb = list.get(i);
                 if (thumb.getPosition() < 0)
                     thumb.setPosition(i);
                 View v = inflater.inflate(R.layout.view_imagefactory_image, null);
@@ -168,13 +170,16 @@ public class PagerImageController implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Thumb thumb = (Thumb) v.getTag();
+        IThumb thumb = (IThumb) v.getTag();
         if (imageClickListener != null)
             imageClickListener.onImageClick((ImageView) v, thumb);
         else {
             if (zoom) {
-                if (thumbToImage == null && context instanceof Activity) {
-                    thumbToImage = new ThumbToImage((Activity) context);
+                if (thumbToImage == null) {
+                    if(context instanceof Activity)
+                        thumbToImage = new ThumbToImage((Activity) context);
+                    else if (activity!=null)
+                        thumbToImage = new ThumbToImage(activity);
                 }
                 if (thumbToImage != null) {
                     thumbToImage.setBackgroundColor(backColor);
@@ -214,12 +219,16 @@ public class PagerImageController implements View.OnClickListener {
         return scale;
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     public class ImageFragmentAdapter extends FragmentStatePagerAdapter {
-        private List<Thumb> list;
+        private List<? extends IThumb> list;
         private boolean isThumb;
         private float rightOffset;
 
-        public ImageFragmentAdapter(FragmentManager fm, List<Thumb> list, boolean isThumb) {
+        public ImageFragmentAdapter(FragmentManager fm, List<? extends IThumb> list, boolean isThumb) {
             super(fm);
             this.list = list;
             this.isThumb = isThumb;
@@ -257,6 +266,6 @@ public class PagerImageController implements View.OnClickListener {
     }
 
     public interface OnImageClickListener {
-        public void onImageClick(ImageView v, Thumb thumb);
+        public void onImageClick(ImageView v, IThumb thumb);
     }
 }

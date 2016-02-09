@@ -29,6 +29,7 @@ import android.widget.ScrollView;
 
 import com.mcgars.imagefactory.animation.BaseAnimationListener;
 import com.mcgars.imagefactory.cutomviews.ImageFactoryView;
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -65,7 +66,7 @@ public class ThumbToImage {
     PhotoViewAttacher mAttacher;
     private ViewPager viewPager;
     private ImageView thumbView;
-    private List<Thumb> list;
+    private List<? extends IThumb> list;
     private Class<? extends ImageShowActivity> acticityClass = ImageShowActivity.class;
     private PagerImageController controller;
     private int topOffest;
@@ -86,17 +87,17 @@ public class ThumbToImage {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void zoom(final ImageView thumbView, List<Thumb> list) {
+    public void zoom(final ImageView thumbView, List<? extends IThumb> list) {
         zoom(thumbView, 0, list);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void zoom(final ImageView thumbView, List<Thumb> list, ViewPager.OnPageChangeListener listener) {
+    public void zoom(final ImageView thumbView, List<? extends IThumb> list, ViewPager.OnPageChangeListener listener) {
         zoom(thumbView, 0, list, listener);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list) {
+    public void zoom(final ImageView thumbView, int selectedPosition, List<? extends IThumb> list) {
         zoom(thumbView, selectedPosition, list, null);
     }
 
@@ -105,7 +106,7 @@ public class ThumbToImage {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void zoom(final ImageView thumbView, int selectedPosition, List<Thumb> list, ViewPager.OnPageChangeListener listener) {
+    public void zoom(final ImageView thumbView, int selectedPosition, List<? extends IThumb> list, ViewPager.OnPageChangeListener listener) {
         this.thumbView = thumbView;
         this.list = list;
         FactoryTool.setVisible(wraper, viewPager);

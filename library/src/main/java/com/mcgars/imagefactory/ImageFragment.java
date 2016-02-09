@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.mcgars.imagefactory.objects.IThumb;
 import com.mcgars.imagefactory.objects.Thumb;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -23,7 +24,7 @@ public class ImageFragment extends Fragment {
 
     private ImageView image;
     private View pbLoader;
-    private Thumb item;
+    private IThumb item;
     private PhotoViewAttacher mAtacher;
     private ImageLoader imageLoader;
     boolean isThumb;
@@ -34,7 +35,7 @@ public class ImageFragment extends Fragment {
         return newInstance(new Thumb(thumb, origin));
     }
 
-    public static ImageFragment newInstance(Thumb item){
+    public static ImageFragment newInstance(IThumb item){
         ImageFragment frag = new ImageFragment();
         frag.setThumbItem(item);
         return frag;
@@ -44,7 +45,7 @@ public class ImageFragment extends Fragment {
         this.isThumb = isThumb;
     }
 
-    private void setThumbItem(Thumb item) {
+    private void setThumbItem(IThumb item) {
         this.item = item;
     }
 

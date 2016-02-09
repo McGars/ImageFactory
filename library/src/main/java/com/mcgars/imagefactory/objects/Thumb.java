@@ -2,7 +2,7 @@ package com.mcgars.imagefactory.objects;
 
 import java.io.Serializable;
 
-public class Thumb implements Serializable {
+public class Thumb implements Serializable, IThumb {
     String thumb;
     String origin;
     private int position = -1;
@@ -15,6 +15,7 @@ public class Thumb implements Serializable {
     public Thumb() {
     }
 
+    @Override
     public String getOrigin() {
         return origin;
     }
@@ -22,7 +23,7 @@ public class Thumb implements Serializable {
     public void setOrigin(String origin) {
         this.origin = origin;
     }
-
+    @Override
     public String getThumb() {
         return thumb;
     }
